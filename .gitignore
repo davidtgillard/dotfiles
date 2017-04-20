@@ -1,0 +1,7 @@
+*-compile-script
+*-make-script
+*.swp
+*.elc
+*~
+session.*
+SessionDesktop.el
