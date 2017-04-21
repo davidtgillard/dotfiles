@@ -53,6 +53,17 @@
 
                                         ; ----- package dependencies
 
+(package-initialize)
+
+;; Bootstrap `use-package'
+(unless (package-installed-p 'use-package)
+  (require 'package)
+  (setq package-enable-at-startup nil)
+  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+
 (use-package anything
   :ensure t)
 
@@ -110,8 +121,8 @@
 
   (use-package rainbow-delimiters
     :ensure t
-    :init
-    (rainbow-delimiters-mode t))
+	:init
+	(add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
   (use-package rsense
     :ensure t)
