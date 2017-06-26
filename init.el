@@ -58,10 +58,11 @@
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
   (require 'package)
-  (setq package-enable-at-startup nil)
-  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-  (package-refresh-contents)
-  (package-install 'use-package))
+  (setq package-enable-at-startup nil))
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
+(package-refresh-contents)
+(package-install 'use-package)
 
 
 (use-package anything
@@ -81,6 +82,12 @@
   ;; Enter cider mode when entering the clojure major mode
   (add-hook 'clojure-mode-hook 'cider-mode))
 
+(use-package clj-refactor
+  :ensure t  
+  :init
+  (add-hook 'clojure-mode-hook (lambda ()
+								 (clj-refactor-mode 1))))
+
 (use-package company
   :ensure t
   :init
@@ -89,7 +96,6 @@
   (add-hook 'cider-repl-mode-hook #'company-mode)
   (add-hook 'cider-mode-hook #'company-mode)
   (add-hook 'cider-mode-hook '(lambda () (local-set-key (kbd "RET") 'newline-and-indent))))
-
 
 (use-package cuda-mode
   :ensure t
@@ -143,8 +149,14 @@
   (use-package tramp
     :ensure t)
 
+(use-package yaml-mode
+  :ensure t)
+
   (use-package yasnippet
-    :ensure t)
+    :ensure t
+	:init
+    (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+
                                         ; ----- end package dependencies
 
 
@@ -156,3 +168,18 @@
 
 
 ;; have to do this to get proper highlighting and enable rainbow-delimiters 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(cua-mode t nil (cua-base))
+ '(font-use-system-font t)
+ '(show-paren-mode t)
+ '(transient-mark-mode (quote (only . t))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Ubuntu Mono" :foundry "DAMA" :slant normal :weight normal :height 105 :width normal)))))
