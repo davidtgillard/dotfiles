@@ -13,6 +13,10 @@
 ;; disable systems beeping
 (setq visible-bell t)
 
+;; set c default style to linux
+(setq c-default-style "bsd"
+      c-basic-offset 2)
+
 ;; iwb idents the whole buffer
 (defun iwb ()
   "indent whole buffer"
@@ -59,11 +63,14 @@
 (unless (package-installed-p 'use-package)
   (require 'package)
   (setq package-enable-at-startup nil))
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
 (package-refresh-contents)
 (package-install 'use-package)
 
+
+(use-package gnu-elpa-keyring-update
+  :ensure t)
 
 (use-package anything
   :ensure t)
@@ -73,34 +80,34 @@
   :init
   (ac-config-default))
 
-(use-package cedet
-  :ensure t)
+;(use-package cedet
+;  :ensure t)
 
-(use-package cider
-  :ensure t
-  :init
+;(use-package cider
+;  :ensure t
+;  :init
   ;; Enter cider mode when entering the clojure major mode
-  (add-hook 'clojure-mode-hook 'cider-mode))
+;  (add-hook 'clojure-mode-hook 'cider-mode))
 
-(use-package clj-refactor
-  :ensure t  
-  :init
-  (add-hook 'clojure-mode-hook (lambda ()
-								 (clj-refactor-mode 1))))
+;(use-package clj-refactor
+;  :ensure t
+;  :init
+;  (add-hook 'clojure-mode-hook (lambda ()
+;                                 (clj-refactor-mode 1))))
 
-(use-package company
-  :ensure t
-  :init
+;(use-package company
+;  :ensure t
+;  :init
   ;; Turn on auto-completion with Company-Mode
-  (global-company-mode)
-  (add-hook 'cider-repl-mode-hook #'company-mode)
-  (add-hook 'cider-mode-hook #'company-mode)
-  (add-hook 'cider-mode-hook '(lambda () (local-set-key (kbd "RET") 'newline-and-indent))))
+;  (global-company-mode)
+;  (add-hook 'cider-repl-mode-hook #'company-mode)
+;  (add-hook 'cider-mode-hook #'company-mode)
+;  (add-hook 'cider-mode-hook '(lambda () (local-set-key (kbd "RET") 'newline-and-indent))))
 
-(use-package cuda-mode
-  :ensure t
-  :init
-  (add-to-list 'auto-mode-alist '("\\.cu\\'" . cuda-mode)))
+;(use-package cuda-mode
+;  :ensure t
+;  :init
+;  (add-to-list 'auto-mode-alist '("\\.cu\\'" . cuda-mode)))
 
 (use-package ecb
   :ensure t)
@@ -114,60 +121,71 @@
   (global-set-key (kbd "C-.") 'highlight-symbol-prev)
   (global-set-key (kbd "C-;") 'highlight-symbol-query-replace))
 
-  (use-package ido
-    :ensure t
-    :init
-    (ido-mode t))
+(use-package ido
+  :ensure t
+  :init
+  (ido-mode t))
 
-  (use-package linum
-    :ensure t
-    :init
-    (setq linum-format "%d ")
-    (global-linum-mode t))
+(use-package linum
+  :ensure t
+  :init
+  (setq linum-format "%d ")
+  (global-linum-mode t))
 
-  (use-package rainbow-delimiters
-    :ensure t
-	:init
-	(add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+(use-package protobuf-mode
+  :ensure t
+  :init
+  (add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode)))
 
-  (use-package rsense
-    :ensure t)
+(use-package rainbow-delimiters
+  :ensure t
+  :init
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
-  (use-package smart-tabs-mode
-    :ensure t
-    :init
-    (autoload 'smart-tabs-mode "smart-tabs-mode"
-      "Intelligently indent with tabs, align with spaces!")
-    (autoload 'smart-tabs-mode-enable "smart-tabs-mode")
-    (autoload 'smart-tabs-advice "smart-tabs-mode")
-    (autoload 'smart-tabs-insinuate "smart-tabs-mode")
-    (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'cperl 'nxml 'python 'ruby)
-    (add-hook 'tcl-mode-hook 'smart-tabs-mode-enable)
-    (smart-tabs-advice tcl-indent-line tcl-indent-level))
+(use-package rsense
+  :ensure t)
 
-  ;; Ensure tramp package is present
-  (use-package tramp
-    :ensure t)
+(use-package s
+  :ensure t)
+
+(use-package smart-tabs-mode
+  :ensure t
+  :init
+  (autoload 'smart-tabs-mode "smart-tabs-mode"
+    "Intelligently indent with tabs, align with spaces!")
+  (autoload 'smart-tabs-mode-enable "smart-tabs-mode")
+  (autoload 'smart-tabs-advice "smart-tabs-mode")
+  (autoload 'smart-tabs-insinuate "smart-tabs-mode")
+  (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'cperl 'nxml 'python 'ruby)
+  (add-hook 'tcl-mode-hook 'smart-tabs-mode-enable)
+  (smart-tabs-advice tcl-indent-line tcl-indent-level))
+
+;; Ensure tramp package is present
+(use-package tramp
+  :ensure t)
+
+(use-package web-mode
+  :ensure t)
 
 (use-package yaml-mode
   :ensure t)
 
-  (use-package yasnippet
-    :ensure t
-	:init
-    (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+(use-package yasnippet
+  :ensure t
+  :init
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
                                         ; ----- end package dependencies
 
 
-										; ----- TODO
+                                        ; ----- TODO
 
 ;; install and learn to use helm-ag
 ;; ditto: pymacs/ropemacs
 ;; ditto: ropemacs
 
 
-;; have to do this to get proper highlighting and enable rainbow-delimiters 
+;; have to do this to get proper highlighting and enable rainbow-delimiters
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -175,6 +193,9 @@
  ;; If there is more than one, they won't work right.
  '(cua-mode t nil (cua-base))
  '(font-use-system-font t)
+ '(package-selected-packages
+   (quote
+	(csharp-mode s s-buffer yaml-mode web-mode use-package smart-tabs-mode rsense rainbow-delimiters protobuf-mode highlight-symbol gnu-elpa-keyring-update ecb cuda-mode company clj-refactor auto-complete anything)))
  '(show-paren-mode t)
  '(transient-mark-mode (quote (only . t))))
 (custom-set-faces
@@ -183,3 +204,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Ubuntu Mono" :foundry "DAMA" :slant normal :weight normal :height 105 :width normal)))))
+(put 'upcase-region 'disabled nil)
