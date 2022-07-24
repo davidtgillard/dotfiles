@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+
+usage="$0 SOURCE_DIRECTORY DESTINATION_DIRECTORY"
+
+# todo: add option for symbolic link
+
+if [ $# -ne 2 ]; then
+	>&2 echo "Error: invalid number of arguments provided"
+	>&2 echo "$usage"
+	exit 1
+fi
+
+if [ ! -d "$1" ]; then
+	>&2 echo "Error: $1 is not a directory"
+	>&2 echo "$usage"
+	exit 1
+fi
+
+
+if ! mkdir -p "$2"; then
+	>&2 echo "Failed to create directory $2"
+	>&2 echo "$usage"
+	exit 1
+fi
+
+for md_file in $(find "$1" -name *.md)
+do
+	txt_file=$2/$(echo "$md_file" | sed "s#$1##")
+	dir=$(dirname "$txt_file")
+	txt_file="$dir/$(basename "$txt_file" .md)".txt
+	mkdir -p "$(dirname "$txt_file")"
+	cp "$md_file" "$txt_file"
+	# ln -s "$md_file" "$txt_file"
+done
+
+exit 0

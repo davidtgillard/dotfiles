@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# pre-commit script to run multiple pre-commit scripts.
+# scripts must be placed in .git/hooks directory with extension '.pre-commit'. 
+# It is assumed that the order in which the scripts are run is inconsequential.
+
+LC_ALL=C
+DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+
+# loop through and call the scripts
+for SCRIPT in "$DIR"/*.pre-commit
+do
+	sh "$SCRIPT"
+	RET_CODE=$?
+	if [ $RET_CODE -ne 0 ]; then
+		exit $RET_CODE
+	fi
+done
+
+exit 0

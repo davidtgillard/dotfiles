@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# a script which prints the contents of any file (presumably a script) within a 
+# 'script-contents' directory, assumed to be in the same directory as this script.
+
+usage() {
+	result="Usage: $(basename $0) SCRIPT_NAME"
+	result="${result}\nwhere SCRIPT_NAME is one of:"
+	for s in $(dirname $0)/script-contents/*; do
+		result="${result}\n - $(basename $s)"
+	done
+	printf "$result"
+}
+
+if [ $# -ne 1 ]; then
+	>&2 echo "invalid number of arguments"
+	>&2 echo "$(usage)"
+	exit 1
+fi
+
+script=$(dirname $0)/script-contents/$1
+if [ ! -e $script ]; then
+	>&2 echo "Invalid option $script"
+	>&2 echo "$(usage)"
+	exit 1
+fi
+
+cat $script

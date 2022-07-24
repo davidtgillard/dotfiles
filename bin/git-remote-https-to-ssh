@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# ensure an argument is provided
+if [ $# -ne 1 ]; then
+	>&2 echo "Invalid number of arguments provided."
+	>&2 echo "Usage: "$(basename "$0")" REMOTE"
+	exit 1
+fi
+
+url=`git ls-remote --get-url $1`
+if [ "${url#https}" == "${url}" ]; then
+	 >&2 echo "$url is not an https link"
+	 exit 1
+fi
+
+repository=`basename $url`
+dn=`dirname $url`
+username=`basename $dn`
+new_url="git@github.com:${username}/${repository}"
+# set the origin
+git remote set-url origin $new_url
+if [ $? -eq 0 ]; then
+	echo "set url of remote $1 to $new_url"
+else
+	>&2 echo "Failed to set url of remote $1 to $new_url"
+	exit 1
+fi

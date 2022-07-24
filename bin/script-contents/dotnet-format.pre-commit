@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# pre-commit script to run dotnet format --verify-no-changes on any files staged for commit
+# modified from sample: https://github.com/dotnet/format/blob/main/docs/integrations.md
+
+LC_ALL=C
+# only select staged files to format
+FILES=$(git diff --staged --name-only --diff-filter=ACM "*.cs" | sed 's| |\\ |g')
+[ -z "$FILES" ] && exit 0
+
+# Format all selected files
+echo "$FILES" | cat | xargs | sed -e 's/ /,/g' | xargs dotnet format --verify-no-changes --include
+FORMAT_CMD_ERR_CODE=$?
+
+# Add back the modified files to staging
+echo "$FILES" | xargs git add 
+
+if [ $FORMAT_CMD_ERR_CODE -ne 0 ]; then
+    >&2 echo "Commit failed due to C# code formatting issues."
+    >&2 echo "Fix the formatting issues by running 'dotnet format'."
+fi
+
+exit $FORMAT_CMD_ERR_CODE
