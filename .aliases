@@ -46,6 +46,8 @@ alias dl="cd ~/Downloads"
 alias g="git"
 alias h="history"
 alias gc=". /usr/local/bin/gitdate && git commit -v "
+alias gpush="git push"
+alias gpull="git pull"
 
 # List all files colorized in long format
 # shellcheck disable=SC2139
