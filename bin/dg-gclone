@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Function to display usage information
+usage() {
+    echo "Usage: dgclone --source <repository-url> [--no-postfix] [additional git clone options]"
+    exit 1
+}
+
+# Initialize variables
+source=""
+postfix=".git"
+additional_options=()
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --source)
+            source="$2"
+            shift 2
+            ;;
+        --no-postfix)
+            postfix=""
+            shift
+            ;;
+        --help)
+            usage
+            ;;
+        *)
+            # Collect additional git clone options
+            additional_options+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# Ensure the source argument is provided
+if [[ -z "$source" ]]; then
+    echo "Error: --source argument is required."
+    usage
+fi
+
+# Extract the repository name from the source URL
+repo_name=$(basename "$source" .git)
+
+# Construct the destination directory name
+destination="${repo_name}${postfix}"
+
+# Execute the git clone command with additional options
+echo "Cloning $source into $destination with options: ${additional_options[*]}"
+git clone "$source" "$destination" "${additional_options[@]}"
+
