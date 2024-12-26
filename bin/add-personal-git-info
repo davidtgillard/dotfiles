@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# Function to display usage information
+usage() {
+    echo "Usage: $0 <category>"
+    exit 1
+}
+
+# check if the path is a git repo
+is_git_repo() {
+    local directory="$1"
+    # Check if the directory is part of a Git repository
+    if [ "$(git -C "$directory" rev-parse --is-inside-work-tree &>/dev/null)" == "true" ]; then
+	    return 1
+    fi
+    # else
+    return 0
+}
+
+# Check if the correct number of arguments is provided
+if [ "$#" -ne 1 ]; then
+    usage
+fi
+
+repo_path="$(pwd)"
+echo "repo_path = $repo_path"
+
+# Assign comamand-line arguments to variables
+category="$1"
+
+# Determine the script's directory and the path to the CSV file
+script_dir="$(dirname "$(realpath "$0")")"
+csv_file="${script_dir}/etc/git-user-info.csv"
+
+# Check if the CSV file exists
+if [ ! -f "$csv_file" ]; then
+    echo "Error: CSV file not found at $csv_file."
+    exit 1
+fi
+
+# Check if the specified directory is a Git repository
+if [ "$(is_git_repo "$repo_path")" ]; then
+    echo "Error: The specified path is not a Git repository."
+    exit 1
+fi
+
+# Read the CSV file to find the matching category
+found=0
+while IFS=',' read -r csv_category name email; do
+    # Remove leading/trailing whitespace and backslashes
+    csv_category=$(echo "$csv_category" | xargs)
+    name=$(echo "$name" | xargs)
+    email=$(echo "$email" | xargs)
+
+    if [ "$csv_category" == "$category" ]; then
+        found=1
+        break
+    fi
+done < "$csv_file"
+
+# Check if the category was found
+if [ "$found" -eq 0 ]; then
+    echo "Error: Category '$category' not found in CSV file."
+    exit 1
+fi
+
+# Navigate to the repository path
+cd "$repo_path" || { echo "Error: Could not change directory to $repo_path."; exit 1; }
+
+# Set the local Git configuration for username and email
+git config user.name "$name"
+git config user.email "$email"
+
+echo "Configured local Git repository with username '$name' and email '$email'."
+
